@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
+// These tests assume a STANDALONE WireMock Server is running with the expected mappings and test
+// These tests are useful for validating a standalone server
 @WireMockTest
 public class WireMockStandaloneTests {
-
 
     @Test
     void testOne() {
@@ -41,12 +42,10 @@ public class WireMockStandaloneTests {
                 then().
                 assertThat().
                 statusCode(404).
-        extract().header("Content-Type");
+                extract().header("Content-Type");
 
         assertEquals("text/plain", contentType);
 
     }
-
-
 
 }

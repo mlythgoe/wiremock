@@ -24,6 +24,7 @@ public class SimpleConfigTests {
 
     @BeforeEach
     void configureSystemUnderTest() {
+
         this.restTemplate = new RestTemplate();
         this.wireMockServer = new WireMockServer(options().port(8081));
         this.wireMockServer.start();
@@ -34,28 +35,39 @@ public class SimpleConfigTests {
     @Test
     @DisplayName("Should ensure that WireMock server was started")
     void shouldEnsureThatServerWasStarted() {
+
+        String responseBody = "This is the Response Body";
+
         givenThat(get(urlEqualTo("/")).willReturn(aResponse()
                 .withStatus(200)
+                .withBody(responseBody.getBytes())
         ));
 
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(responseBody);
+
     }
 
     @Test
     @DisplayName("Should respond with http status 200 if receiving request url of http://localhost:8081/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016")
     void shouldReturnSomething() {
+
         givenThat(get(urlEqualTo("/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016")).willReturn(aResponse()
+                .withBody("Response Body".getBytes())
                 .withStatus(200)
         ));
 
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
     @AfterEach
     void stopWireMockServer() {
+
         this.wireMockServer.stop();
+
     }
 }
 
