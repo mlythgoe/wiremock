@@ -94,7 +94,7 @@ public class WireMockInternalServerTests {
     }
 
     @Test
-    void testGetEmployeesThatDoesNotExist() {
+    void testGetEmployeesUsingIdThatDoesNotExist() {
 
         var message = "404 Does Not Exists: [no body]";
 
