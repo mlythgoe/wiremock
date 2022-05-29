@@ -3,9 +3,9 @@ package net.mikelythgoe.wiremock;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -31,63 +31,62 @@ public class WireMockInternalServerTests {
         WireMock.configureFor(HOST, PORT);
 
         // Build a response
-        ResponseDefinitionBuilder emps1Response = new ResponseDefinitionBuilder();
-        emps1Response.withStatus(201);
-        emps1Response.withStatusMessage("I have just been created");
-        emps1Response.withHeader("Content-Type", "text/json");
-        emps1Response.withHeader("token", "11111");
-        emps1Response.withHeader("Set-Cookie", "session-id=11111111");
-        emps1Response.withHeader("Set-Cookie", "split_test_group=B");
-        emps1Response.withBody("Text of the Body");
+        ResponseDefinitionBuilder postEmployee1Response = new ResponseDefinitionBuilder();
+        postEmployee1Response.withStatus(201);
+        postEmployee1Response.withStatusMessage("I have just been created");
+        postEmployee1Response.withHeader("Content-Type", "text/json");
+        postEmployee1Response.withHeader("token", "11111");
+        postEmployee1Response.withHeader("Set-Cookie", "session-id=11111111");
+        postEmployee1Response.withHeader("Set-Cookie", "split_test_group=B");
+        postEmployee1Response.withBody("{ \"name\":\"Employee One\" }");
 
         // Map the response to a request url
-        WireMock.givenThat(WireMock.get("/emps/1").willReturn(emps1Response));
+        WireMock.givenThat(WireMock.post("/employees/1").willReturn(postEmployee1Response));
 
         // Build a response
-        ResponseDefinitionBuilder emps2Response = new ResponseDefinitionBuilder();
-        emps2Response.withStatus(200);
-        emps2Response.withStatusMessage("I Am Employee 2");
-        emps2Response.withHeader("Content-Type", "text/json");
-        emps2Response.withHeader("token", "22222");
-        emps2Response.withHeader("Set-Cookie", "session-id=222222222");
-        emps2Response.withHeader("Set-Cookie", "split_test_group=A");
-        emps2Response.withBody("Text of the Body");
+        ResponseDefinitionBuilder getEmployee1Response = new ResponseDefinitionBuilder();
+        getEmployee1Response.withStatus(200);
+        getEmployee1Response.withStatusMessage("I Am Employee 1");
+        getEmployee1Response.withHeader("Content-Type", "text/json");
+        getEmployee1Response.withHeader("token", "22222");
+        getEmployee1Response.withHeader("Set-Cookie", "session-id=222222222");
+        getEmployee1Response.withHeader("Set-Cookie", "split_test_group=A");
+        getEmployee1Response.withBody("{ \"name\":\"Employee One\" }");
 
         // Map the response to a request url
-        WireMock.givenThat(WireMock.get("/emps/2").willReturn(emps2Response));
+        WireMock.givenThat(WireMock.get("/employees/1").willReturn(getEmployee1Response));
+
+        // Build a response
+        ResponseDefinitionBuilder employee2Response = new ResponseDefinitionBuilder();
+        employee2Response.withStatus(200);
+        employee2Response.withStatusMessage("I Am Employee 2");
+        employee2Response.withHeader("Content-Type", "text/json");
+        employee2Response.withHeader("token", "22222");
+        employee2Response.withHeader("Set-Cookie", "session-id=222222222");
+        employee2Response.withHeader("Set-Cookie", "split_test_group=A");
+        employee2Response.withBody("{ \"name\":\"Employee Two\" }");
+
+        // Map the response to a request url
+        WireMock.givenThat(WireMock.get("/employees/2").willReturn(employee2Response));
     }
 
-
     @Test
-    void testGetEmps1UsingRestAssured() {
+    void testPostEmployees1() {
 
-        // RestAssured call - make a http get to the URL and assert the status code is 201
-        RestAssured.given().
-                get("http://" + HOST + ":" + PORT + "/emps/1").
-                then().
-                assertThat().
-                statusCode(201);
+        HttpEntity<String> request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
 
-    }
-
-    @Test
-    void testGetEmps2UsingRestAssured() {
-
-        // RestAssured call - make a http get to the URL and assert the status code is 200
-        RestAssured.given().
-                get("http://" + HOST + ":" + PORT + "/emps/2").
-                then().
-                assertThat().
-                statusCode(200);
+        ResponseEntity<String> response = restTemplate.postForEntity("http://" + HOST + ":" + PORT + "/employees/1", request, String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
     }
 
     @Test
-    void testGetEmps2UsingRestTemplateAndAssertJ() {
+    void testGetEmployees2() {
 
         // Using RestTemplate and AssertJ
-        ResponseEntity<String> response = restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/emps/2", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/2", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo("{ \"name\":\"Employee Two\" }");
 
     }
 
