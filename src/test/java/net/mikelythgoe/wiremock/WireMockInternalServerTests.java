@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 // This class shows the setting up of a Mock Server and some tests
@@ -20,8 +24,10 @@ import static org.assertj.core.api.Assertions.*;
 public class WireMockInternalServerTests {
 
     private static final RestTemplate restTemplate = new RestTemplate();
+
+    private static final String PROTOCOL = "http://";
     private static final String HOST = "localhost";
-    private static final int PORT = 8080;
+    private static final int PORT = 8081;
     private static final WireMockServer WIRE_MOCK_SERVER = new WireMockServer(PORT);
 
     @BeforeAll
@@ -44,19 +50,6 @@ public class WireMockInternalServerTests {
         WireMock.givenThat(WireMock.post("/employees/1").willReturn(postEmployee1Response));
 
         // Build a response
-        ResponseDefinitionBuilder getEmployee1Response = new ResponseDefinitionBuilder();
-        getEmployee1Response.withStatus(200);
-        getEmployee1Response.withStatusMessage("I Am Employee 1");
-        getEmployee1Response.withHeader("Content-Type", "text/json");
-        getEmployee1Response.withHeader("token", "22222");
-        getEmployee1Response.withHeader("Set-Cookie", "session-id=222222222");
-        getEmployee1Response.withHeader("Set-Cookie", "split_test_group=A");
-        getEmployee1Response.withBody("{ \"name\":\"Employee One\" }");
-
-        // Map the response to a request url
-        WireMock.givenThat(WireMock.get("/employees/1").willReturn(getEmployee1Response));
-
-        // Build a response
         ResponseDefinitionBuilder employee2Response = new ResponseDefinitionBuilder();
         employee2Response.withStatus(200);
         employee2Response.withStatusMessage("I Am Employee 2");
@@ -68,14 +61,23 @@ public class WireMockInternalServerTests {
 
         // Map the response to a request url
         WireMock.givenThat(WireMock.get("/employees/2").willReturn(employee2Response));
+
+        // Build a response
+        ResponseDefinitionBuilder getEmployee999Response = new ResponseDefinitionBuilder();
+        getEmployee999Response.withStatus(404);
+        getEmployee999Response.withStatusMessage("Does Not Exists");
+
+        // Map the response to a request url
+        WireMock.givenThat(WireMock.get("/employees/999").willReturn(getEmployee999Response));
     }
 
     @Test
     void testPostEmployees1() {
 
-        HttpEntity<String> request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
+        var request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
 
-        ResponseEntity<String> response = restTemplate.postForEntity("http://" + HOST + ":" + PORT + "/employees/1", request, String.class);
+        var response = restTemplate.postForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/1", request, String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
     }
@@ -83,14 +85,29 @@ public class WireMockInternalServerTests {
     @Test
     void testGetEmployees2() {
 
-        // Using RestTemplate and AssertJ
-        ResponseEntity<String> response = restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/2", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/2", String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         assertThat(response.getBody()).isEqualTo("{ \"name\":\"Employee Two\" }");
 
     }
 
+    @Test
+    void testGetEmployeesThatDoesNotExist() {
 
+        var message = "404 Does Not Exists: [no body]";
 
+        var expectedException = assertThrows(
+
+                HttpClientErrorException.class,
+                () -> {
+                    restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", null);
+
+                });
+
+        assertEquals(message, expectedException.getMessage());
+
+    }
 
 }
