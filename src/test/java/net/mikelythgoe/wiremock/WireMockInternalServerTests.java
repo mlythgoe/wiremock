@@ -12,7 +12,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -101,12 +100,9 @@ public class WireMockInternalServerTests {
         var expectedException = assertThrows(
 
                 HttpClientErrorException.class,
-                () -> {
-                    restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", null);
+                () -> restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", null));
 
-                });
-
-        assertEquals(message, expectedException.getMessage());
+        assertThat(message).isEqualTo(expectedException.getMessage());
 
     }
 
