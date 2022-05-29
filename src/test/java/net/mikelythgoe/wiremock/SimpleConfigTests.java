@@ -50,15 +50,15 @@ public class SimpleConfigTests {
     }
 
     @Test
-    @DisplayName("Should respond with http status 200 if receiving request url of http://localhost:8081/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016")
+    @DisplayName("Should respond with http status 200 if receiving request url of http://localhost:8081/justarandomurl")
     void shouldReturnSomething() {
 
-        givenThat(get(urlEqualTo("/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016")).willReturn(aResponse()
+        givenThat(get(urlEqualTo("/justarandomurl")).willReturn(aResponse()
                 .withBody("Response Body".getBytes())
                 .withStatus(200)
         ));
 
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/savs/validateaddress/search/v1?maxresults=20&countryiso=NZL&postcode=2016", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/justarandomurl", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
