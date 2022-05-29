@@ -100,7 +100,7 @@ public class WireMockInternalServerTests {
         var expectedException = assertThrows(
 
                 HttpClientErrorException.class,
-                () -> restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", null));
+                () -> restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", String.class));
 
         assertThat(message).isEqualTo(expectedException.getMessage());
 
