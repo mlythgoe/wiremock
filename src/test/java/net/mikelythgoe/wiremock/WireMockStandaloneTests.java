@@ -10,8 +10,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 // These tests assume a STANDALONE WireMock Server is running with the expected mappings and test
 // These tests are useful for validating a standalone server
@@ -32,6 +30,7 @@ public class WireMockStandaloneTests {
         HttpEntity<String> request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
 
         ResponseEntity<String> response = restTemplate.postForEntity("http://" + HOST + ":" + PORT + "/employees/1", request, String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
     }
@@ -40,7 +39,9 @@ public class WireMockStandaloneTests {
     void testGetThatExists() {
 
         ResponseEntity<String> response = restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/2", String.class);
+
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         assertThat(response.getBody()).isEqualTo("{ \"name\":\"Employee Two\" }");
 
     }
@@ -49,9 +50,12 @@ public class WireMockStandaloneTests {
     void testGetThatDoesNotExist() {
 
         try {
+
             restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/99", String.class);
+
         } catch (HttpStatusCodeException ex) {
-            assertThat(ex.getStatusCode().equals(HttpStatus.NOT_FOUND));
+
+            assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
         }
 
