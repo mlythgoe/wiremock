@@ -29,7 +29,8 @@ public class WireMockStandaloneTests {
 
         HttpEntity<String> request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
 
-        ResponseEntity<String> response = restTemplate.postForEntity("http://" + HOST + ":" + PORT + "/employees/1", request, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                "http://" + HOST + ":" + PORT + "/employees/1", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -38,7 +39,8 @@ public class WireMockStandaloneTests {
     @Test
     void testGetThatExists() {
 
-        ResponseEntity<String> response = restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/2", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://" + HOST + ":" + PORT + "/employees/2", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -51,7 +53,8 @@ public class WireMockStandaloneTests {
 
         try {
 
-            restTemplate.getForEntity("http://" + HOST + ":" + PORT + "/employees/99", String.class);
+            restTemplate.getForEntity(
+                    "http://" + HOST + ":" + PORT + "/employees/99", String.class);
 
         } catch (HttpStatusCodeException ex) {
 

@@ -75,7 +75,8 @@ public class WireMockInternalServerTests {
 
         var request = new HttpEntity<>("{ \"name\":\"Employee One\" }");
 
-        var response = restTemplate.postForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/1", request, String.class);
+        var response = restTemplate.postForEntity(
+                PROTOCOL + HOST + ":" + PORT + "/employees/1", request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -84,7 +85,8 @@ public class WireMockInternalServerTests {
     @Test
     void testGetEmployees2() {
 
-        ResponseEntity<String> response = restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/2", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                PROTOCOL + HOST + ":" + PORT + "/employees/2", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -100,7 +102,9 @@ public class WireMockInternalServerTests {
         var expectedException = assertThrows(
 
                 HttpClientErrorException.class,
-                () -> restTemplate.getForEntity(PROTOCOL + HOST + ":" + PORT + "/employees/999", String.class));
+                () -> restTemplate.getForEntity(
+                        PROTOCOL + HOST + ":" + PORT + "/employees/999", String.class)
+        );
 
         assertThat(message).isEqualTo(expectedException.getMessage());
 

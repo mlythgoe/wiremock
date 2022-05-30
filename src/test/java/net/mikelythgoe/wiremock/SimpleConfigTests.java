@@ -43,7 +43,8 @@ public class SimpleConfigTests {
                 .withBody(responseBody.getBytes())
         ));
 
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:8081", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(responseBody);
 
@@ -58,7 +59,8 @@ public class SimpleConfigTests {
                 .withStatus(200)
         ));
 
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/justARandomUrl", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:8081/justARandomUrl", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
