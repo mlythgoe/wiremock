@@ -15,7 +15,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Unit test for simple App.
+ * Unit test for Basic WireMock Configuration - uses WireMock's stub mapping.
  */
 public class SimpleConfigTests {
 
@@ -50,15 +50,15 @@ public class SimpleConfigTests {
     }
 
     @Test
-    @DisplayName("Should respond with http status 200 if receiving request url of http://localhost:8081/justarandomurl")
+    @DisplayName("Should respond with http status 200 if receiving request url of http://localhost:8081/justARandomUrl")
     void shouldReturnSomething() {
 
-        givenThat(get(urlEqualTo("/justarandomurl")).willReturn(aResponse()
+        givenThat(get(urlEqualTo("/justARandomUrl")).willReturn(aResponse()
                 .withBody("Response Body".getBytes())
                 .withStatus(200)
         ));
 
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/justarandomurl", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:8081/justARandomUrl", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
